@@ -293,11 +293,48 @@ button{font-family:'Nunito';cursor:pointer;border:none;font-weight:800;}
 
 /* ---------- shop ---------- */
 .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+#previewWrap{display:none;position:fixed;inset:0;z-index:80;background:rgba(27,20,54,.55);
+  align-items:center;justify-content:center;padding:18px;}
+.pvcard{background:var(--card);border:var(--bw) solid var(--ink);border-radius:22px;
+  box-shadow:0 8px 0 var(--ink);padding:18px;width:100%;max-width:340px;max-height:92vh;
+  overflow-y:auto;animation:in .25s cubic-bezier(.2,1.3,.4,1);text-align:center;}
+.pvart{width:120px;height:120px;margin:0 auto 6px;}
+.pvart svg{width:100%;height:100%;overflow:visible;}
+.pvname{font-size:23px;margin:0;}
+.pvkind{margin:2px 0 12px;font-size:13px;font-weight:700;color:var(--ink-soft);}
+.pvsum{background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;
+  padding:10px 12px;margin-bottom:11px;}
+.pvrow{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  font-size:14px;font-weight:800;padding:4px 0;}
+.pvrow+.pvrow{border-top:2px dashed #D6E2F0;}
+.pvrow b{display:inline-flex;align-items:center;gap:4px;font-family:'Baloo 2';font-size:17px;}
+.pvrow.left b{color:#0A6B2E;}
+.pvrow.short b{color:var(--rose-d);}
+.pvnote{font-size:13px;font-weight:700;margin:0 0 11px;padding:9px 11px;border-radius:12px;
+  border:2.5px solid var(--ink);}
+.pvnote.ok{background:#DFF7EF;}
+.pvnote.warn{background:#FFE9C7;}
+.pvcard .btn{margin-top:0;}
+.shopbal{grid-column:1/-1;margin:0 0 4px;text-align:center;font-size:14px;font-weight:800;
+  color:var(--ink-soft);}
+.shopbal b{color:#8A5A00;font-family:'Baloo 2';font-size:17px;}
 .sc{background:var(--card);border:var(--bw) solid var(--ink);border-radius:var(--r);
-  padding:13px 9px;text-align:center;box-shadow:var(--drop);}
+  padding:13px 9px;text-align:center;box-shadow:var(--drop);color:var(--ink);
+  transition:transform .07s,box-shadow .07s;display:flex;flex-direction:column;align-items:center;}
+.sc:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink);}
+.sc .th{width:80px;height:80px;margin:0 auto 7px;position:relative;}
+.sc .th svg{width:100%;height:100%;overflow:visible;}
+.lockdot{position:absolute;right:-4px;bottom:-2px;font-size:15px;line-height:1;
+  background:var(--card);border:2.5px solid var(--ink);border-radius:50%;padding:3px;}
+.scstate{display:inline-flex;align-items:center;border:2.5px solid var(--ink);border-radius:999px;
+  padding:2px 11px;font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;}
+.scstate.owned{background:#DFF7EF;color:var(--ink);}
+.scstate.on{background:var(--gold);color:var(--ink);}
+
+
 .sc.own{background:var(--paper);}
 .sc.act{background:#FFF0C7;box-shadow:0 4px 0 var(--ink),0 0 0 4px var(--gold);}
-.sc .th{width:80px;height:80px;margin:0 auto 7px;}
+
 .sc .th svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 0 rgba(27,20,54,.3));}
 .sc h3{font-size:18px;}
 .sc p{font-size:12px;color:var(--ink-soft);margin:1px 0 9px;min-height:30px;line-height:1.35;font-weight:700;}
@@ -1010,6 +1047,14 @@ input[type=text]:focus{outline:none;background:#FFF9EC;}
 
 </div><!-- end screens -->
 
+<div id="previewWrap" role="dialog" aria-modal="true" aria-label="Item preview">
+  <div class="pvcard">
+    <div id="previewBody"></div>
+    <button class="btn grape" id="previewGo">Buy</button>
+    <button class="btn ghost sm" id="previewCancel" style="margin-top:9px;">No thanks</button>
+  </div>
+</div>
+
 <div id="levelUp"></div>
 <div id="crashBox" style="display:none;position:fixed;left:8px;right:8px;bottom:78px;z-index:99;
   background:#FFE0E7;border:3px solid #1B1436;border-radius:14px;padding:11px;font-size:12px;
@@ -1118,16 +1163,11 @@ function mouthOpen(cx, cy, w, h){
   return '<path d="M' + (cx - w) + ' ' + cy + ' Q' + cx + ' ' + (cy + h) + ' ' + (cx + w) + ' ' + cy + ' Z" fill="#41203C"/>' +
          '<ellipse cx="' + cx + '" cy="' + (cy + h * 0.52) + '" rx="' + (w * 0.46) + '" ry="' + (h * 0.3) + '" fill="#FF8FAE" stroke="none"/>';
 }
-function smileM(cx, cy, w){
-  return '<path d="M' + (cx - w) + ' ' + cy + ' Q' + cx + ' ' + (cy + w * 0.85) + ' ' + (cx + w) + ' ' + cy + '" stroke="#1B1436" stroke-width="4" fill="none" stroke-linecap="round"/>';
-}
 /* blush — every character gets it */
 function blushM(x1, x2, y, c){
   return '<ellipse cx="' + x1 + '" cy="' + y + '" rx="9" ry="5.5" fill="' + (c || '#FF8FAE') + '" opacity=".7" stroke="none"/>' +
          '<ellipse cx="' + x2 + '" cy="' + y + '" rx="9" ry="5.5" fill="' + (c || '#FF8FAE') + '" opacity=".7" stroke="none"/>';
 }
-function browM(){ return ""; }   /* kept for compatibility; cute faces have no brows */
-function cheekM(x1, x2, y, c){ return blushM(x1, x2, y, c); }
 function feetM(y, c, spread){
   var s = spread || 15;
   return '<ellipse cx="' + (50 - s) + '" cy="' + y + '" rx="9" ry="6.5" fill="' + c + '"/>' +
@@ -1137,8 +1177,6 @@ function nubArms(y, c){
   return '<ellipse cx="17" cy="' + y + '" rx="8" ry="6.5" fill="' + c + '"/>' +
          '<ellipse cx="83" cy="' + y + '" rx="8" ry="6.5" fill="' + c + '"/>';
 }
-function legsM(y, c, spread){ return feetM(y + 8, c, spread); }
-function armsM(y, c){ return nubArms(y, c); }
 function spotsM(pts, c){
   return pts.map(function(p){
     return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + p[2] + '" fill="' + c + '" opacity=".5" stroke="none"/>';
@@ -2514,14 +2552,6 @@ STRAND["Problem solving"] = "Problem solving";
    ============================================================ */
 function N_(v){ return Number(String(v).replace(/,/g,"").replace(/\u2212/g,"-")); }
 function F_(n){ return Number(n).toLocaleString("en-GB"); }
-function place(n){
-  var s = String(Math.abs(n)), out = [], names = ["ones","tens","hundreds","thousands"];
-  for(var i = 0; i < s.length && i < 4; i++){
-    var d = Number(s[s.length - 1 - i]);
-    if(d) out.unshift(d * Math.pow(10, i) + " (" + names[i] + ")");
-  }
-  return out.join(" + ");
-}
 
 var SOLVERS = [
   { re:/^(-?[\d,]+) \+ (-?[\d,]+)$/, go:function(m){
@@ -3323,11 +3353,11 @@ GEN = GEN.concat([
             ["it raining and you wearing a coat","can"],
             ["a coin landing heads and landing tails on one throw","cannot"]]);
   return mk(6,3,"Probability","Can these both happen at once:  "+e[0]+"?",
-    e[1]==="cannot" ? "No, they are mutually exclusive" : "Yes, they can both happen",
+    e[1]==="cannot" ? "No, they are mutually exclusive" : "Yes, they can both happen at once",
    [[e[1]==="cannot" ? "Yes, they can both happen" : "No, they are mutually exclusive",
      "Think about whether one result rules the other out."],
-    ["Only if you try many times","Repeating does not change whether they can happen together."],
-    ["It is impossible to say","The two events can be reasoned about directly."]]);
+    ["Only if the coin is thrown many times","Repeating does not change whether they can happen together."],
+    ["No, but only because the coin is unfair","The two events can be reasoned about directly."]]);
 }},
 {st:3,d:2,sk:"Statistics",f:function(){                  // Venn and Carroll diagrams
   var a=RN(3,9), b=RN(3,9), both=RN(1,Math.min(a,b)-1);
@@ -3610,9 +3640,9 @@ GEN = GEN.concat([
   var n=RN(6,24);
   return mk(2,2,"Statistics","On a tally chart, how are "+n+" items recorded in groups?",
     Math.floor(n/5)+" group"+(Math.floor(n/5)===1?"":"s")+" of five and "+(n%5)+" more",
-   [[n+" separate marks","Tally marks are grouped in fives to make counting easier."],
-    [Math.floor(n/5)+" marks","Each group of five stands for five items, not one."],
-    [(n%5)+" groups of five","The number of groups comes from dividing by five."]]);
+   [[(Math.floor(n/5)+1)+" groups of five and "+(n%5)+" more","One group too many. Divide by five to find the groups."],
+    [(n%5)+" groups of five and "+Math.floor(n/5)+" more","The groups and the leftover have been swapped."],
+    [Math.floor(n/5)+" groups of five and "+((n%5)+1)+" more","One leftover too many. Check what remains after the fives."]]);
 }},
 {st:2,d:2,sk:"Probability",obj:"2Sp.01",f:function(){
   var p=PK([["red, red, blue, red, red, blue","regular"],["blue, red, red, blue, red, blue","random"]]);
@@ -3651,7 +3681,7 @@ GEN = GEN.concat([
  [[Math.floor(n/10),"That counts the tens."],[n%10,"That is the ones digit."],[h+1,"One hundred too many."]]);}},
 {st:3,d:2,sk:"Calculation",obj:"3Ni.02",f:function(){var a=RN(2,30),b=RN(2,30),c=RN(2,30);
  return mk(3,2,"Calculation","Which is the easiest way to work out "+a+" + "+b+" + "+c+"?","Add them in any order, the total is the same",
- [["Only left to right works","Addition can be done in any order."],["The largest must come first","Order does not change the total."],["They cannot be added together","They can."]]);}},
+ [["Add them left to right only, or the total changes","Addition can be done in any order."],["Add the largest first, or the total changes","Order does not change the total."],["Add them in pairs only, or the total changes","They can."]]);}},
 {st:3,d:2,sk:"Calculation",obj:"3Ni.04",f:function(){var a=RN(120,880),b=RN(120,880);
  return mk(3,2,"Calculation",FM(a)+" + "+FM(b),FM(a+b),
  [[FM(a+b-10),"Ten out. Check the carrying."],[FM(a+b+100),"A hundred too many."],[FM(Math.abs(a-b)),"Those were subtracted."]]);}},
@@ -3726,7 +3756,7 @@ GEN = GEN.concat([
  [[FM(u[1]*10),"Ten times too many."],[FM(u[1]/10),"Ten times too few."],["12","That is not a metric conversion."]]);}},
 {st:3,d:2,sk:"Measurement",obj:"3Gg.03",f:function(){
  return mk(3,2,"Measurement","What does perimeter measure?","The distance all the way around a shape",
- [["The space inside a shape","That is the area."],["The number of corners","That is the vertices."],["The longest side","Perimeter uses every side."]]);}},
+ [["The amount of space inside the shape","That is the area."],["The number of corners the shape has","That is the vertices."],["The length of the longest side only","Perimeter uses every side."]]);}},
 {st:3,d:2,sk:"Measurement",obj:"3Gg.06",f:function(){var u=PK([["g in 1 kg",1000],["kg in half a kilogram",0.5]]);
  if(u[1]===0.5) return null;
  return mk(3,2,"Measurement","How many "+u[0]+"?",FM(u[1]),
@@ -3774,7 +3804,7 @@ GEN = GEN.concat([
  [[FM(a+b),"Those were added."],[FM(a-b-10),"Ten out."],[FM(b-a<0?a-b+100:a-b),"A hundred out."]]);}},
 {st:4,d:3,sk:"Multiplication and division",obj:"4Ni.03",f:function(){var a=RN(2,5),b=RN(2,5),c=RN(2,5);
  return mk(4,3,"Multiplication and division","Which is easiest for "+a+" \u00D7 "+b+" \u00D7 "+c+"?","Multiply in any order, the answer is the same",
- [["Only left to right is allowed","Multiplication can be grouped in any order."],["The largest must go first","Order does not change the product."],["They cannot be multiplied","They can."]]);}},
+ [["Multiply left to right only, or the answer changes","Multiplication can be grouped in any order."],["Multiply the largest first, or the answer changes","Order does not change the product."],["Multiply in pairs only, or the answer changes","They can."]]);}},
 {st:4,d:1,sk:"Multiplication and division",obj:"4Ni.04",f:function(){var t=RN(2,10),n=RN(2,10);
  return mk(4,1,"Multiplication and division",n+" \u00D7 "+t,n*t,
  [[n*t+t,"One group too many."],[n*t-t,"One group too few."],[n+t,"Those were added."]]);}},
@@ -3833,7 +3863,7 @@ GEN = GEN.concat([
  [[(full+half)+" squares","Each half square counts as a half, not a whole."],[full+" squares","The half squares have been ignored."],[(full*half)+" squares","They are added, not multiplied."]]);}},
 {st:4,d:2,sk:"Shape and angles",obj:"4Gg.05",f:function(){var s=PK([["cube","squares"],["cylinder","circles and a curved surface"],["square-based pyramid","a square and triangles"],["triangular prism","triangles and rectangles"]]);
  return mk(4,2,"Shape and angles","What 2D shapes make up the faces of a "+s[0]+"?",s[1],
- [[s[1]==="squares"?"circles and a curved surface":"squares","That describes a different solid."],["only triangles","That is not this solid."],["only circles","That is not this solid."]]);}},
+ [[s[1]==="squares"?"circles and a curved surface":"squares and rectangles","That describes a different solid."],["triangles and a curved surface","That is not this solid."],["circles and triangles only","That is not this solid."]]);}},
 {st:4,d:2,sk:"Position and transformation",obj:"4Gg.07",f:function(){var s=PK([["square",4],["rectangle",2],["equilateral triangle",3],["regular hexagon",6],["isosceles triangle",1]]);
  return mk(4,2,"Position and transformation","How many lines of symmetry does a "+s[0]+" have?",s[1],
  [[s[1]+1,"One too many. Each fold must match exactly."],[Math.max(0,s[1]-1),"One too few. Remember the diagonals where they work."],[s[1]*2,"That counts each line twice."]]);}},
@@ -4006,7 +4036,7 @@ GEN = GEN.concat([
  [[(b*h)+" cm\u00B2","That is the rectangle around it; a triangle is half."],[(b+h)+" cm\u00B2","Area multiplies, it does not add."],[(b*h/4)+" cm\u00B2","Halved twice."]]);}},
 {st:6,d:2,sk:"Measurement",obj:"6Gg.05",f:function(){
  return mk(6,2,"Measurement","What is the difference between capacity and volume?","Capacity is how much a container holds; volume is the space something takes up",
- [["They mean exactly the same thing","They are related but not the same."],["Capacity is for solids only","Capacity usually describes containers and liquids."],["Volume is measured in litres only","Volume is often measured in cubic units."]]);}},
+ [["Capacity and volume mean exactly the same thing, measured in the same way","They are related but not the same."],["Capacity is for solid objects; volume is only for liquids in containers","Capacity usually describes containers and liquids."],["Volume is only ever measured in litres; capacity is only ever in cubic units","Volume is often measured in cubic units."]]);}},
 {st:6,d:3,sk:"Measurement",obj:"6Gg.07",f:function(){var e=RN(2,7);
  return mk(6,3,"Measurement","A cube has edge "+e+" cm. What is its surface area?",(6*e*e)+" cm\u00B2",
  [[(e*e*e)+" cm\u00B3","That is the volume, not the surface area."],[(e*e)+" cm\u00B2","That is one face only; a cube has six."],[(4*e*e)+" cm\u00B2","Four faces counted; a cube has six."]]);}},
@@ -4034,7 +4064,7 @@ GEN = GEN.concat([
  [[w+"/"+(t-w),"The bottom is the total number of sections."],[(t-w)+"/"+t,"That is the chance of landing unshaded."],[w+":"+t,"Probability is written as a fraction."]]);}},
 {st:6,d:3,sk:"Probability",obj:"6Sp.03",f:function(){
  return mk(6,3,"Probability","Why do we repeat a chance experiment many times?","Because results settle closer to the true probability with more trials",
- [["Because the first result is always wrong","A single result is not wrong, just unreliable."],["Because it changes the probability","Repeating does not change the underlying chance."],["To make it take longer","Repetition has a mathematical purpose."]]);}},
+ [["Because the first few results are always wrong and must be thrown away","A single result is not wrong, just unreliable."],["Because repeating the experiment changes the true probability each time","Repeating does not change the underlying chance."],["Because the experiment only counts once it has taken a long time","Repetition has a mathematical purpose."]]);}},
 
 /* -------- remaining STAGE 1 and 2 objectives -------- */
 {st:1,d:1,sk:"Counting and sequences",obj:"1Nc.01",f:function(){var n=RN(5,20);
@@ -4075,7 +4105,7 @@ GEN = GEN.concat([
  [[s[1]==="4 times"?"2 times":"4 times","Turn it in your mind and count the matches."],["never","It matches at least once, back where it started."],["1 time","It matches more often than that."]]);}},
 {st:2,d:1,sk:"Counting and sequences",obj:"2Nc.05",f:function(){var n=RN(10,99);
  return mk(2,1,"Counting and sequences","How can you tell if "+n+" is even?","Look at the last digit: 0, 2, 4, 6 or 8",
- [["Look at the first digit","Only the ones digit decides it."],["Add both digits together","That test is for divisibility by other numbers."],["Count how many digits it has","The number of digits does not decide it."]]);}},
+ [["Look at the first digit: 0, 2, 4, 6 or 8","Only the ones digit decides it."],["Add the digits together: 0, 2, 4, 6 or 8","That test is for divisibility by other numbers."],["Count the digits: an even number has 2","The number of digits does not decide it."]]);}},
 {st:2,d:2,sk:"Calculation",obj:"2Ni.04",f:function(){var a=RN(11,44),b=RN(11,44);
  if((a%10)+(b%10)>9) return null;
  return mk(2,2,"Calculation",a+" + "+b,a+b,
@@ -4237,13 +4267,13 @@ GEN = GEN.concat([
  [["("+x+", -"+y+")","That reflects in a horizontal line."],["(-"+x+", -"+y+")","That reflects in both."],["("+y+", "+x+")","That swaps the coordinates."]]);}},
 {st:4,d:2,sk:"Probability",obj:"4Sp.02",f:function(){
  return mk(4,2,"Probability","A coin is thrown 100 times instead of 10. What happens to the results?","They get closer to half heads and half tails",
- [["Heads becomes more likely","Each throw stays even."],["The results become more uneven","More trials usually evens them out."],["Nothing changes at all","More trials give a clearer picture."]]);}},
+ [["Heads becomes more and more likely","Each throw stays even."],["They move further from half and half","More trials usually evens them out."],["They stay exactly as they were","More trials give a clearer picture."]]);}},
 {st:5,d:2,sk:"Counting and sequences",obj:"5Nc.02",f:function(){var a=RN(2,9),b=RN(2,9);
  return mk(5,2,"Counting and sequences","If  \u25A1 + \u25B3 = "+(a+b)+" and \u25A1 = "+a+", what is \u25B3?",b,
  [[a,"That is the value already given."],[a+b,"That is the total."],[Math.abs(a-b),"Subtract "+a+" from the total."]]);}},
 {st:5,d:2,sk:"Calculation",obj:"5Ni.02",f:function(){var a=RN(2,9),b=RN(2,9);
  return mk(5,2,"Calculation","Which makes "+a+" \u00D7 "+b+" \u00D7 10 easiest?","Multiply by 10 last",
- [["It must be done left to right","Multiplication can be reordered freely."],["The order changes the answer","It does not."],["It cannot be reordered","It can."]]);}},
+ [["Multiply by 10 first","Multiplication can be reordered freely."],["Multiply by 10 in the middle","It does not."],["Multiply by 10 twice","It can."]]);}},
 {st:5,d:2,sk:"Multiplication and division",obj:"5Ni.04",f:function(){var a=RN(120,980),b=RN(11,30);
  return mk(5,2,"Multiplication and division",FM(a)+" \u00D7 "+b,FM(a*b),
  [[FM(a*b-a),"One group short."],[FM(a+b),"Those were added."],[FM(a*(b%10)),"Only the ones digit was used."]]);}},
@@ -4279,13 +4309,13 @@ GEN = GEN.concat([
  [[(a*b)+" cm\u00B2","Only one part has been counted."],[((a+c)*b*2)+" cm\u00B2","The parts are added once, not twice."],[(a*b*c)+" cm\u00B2","Areas are added, not multiplied."]]);}},
 {st:5,d:2,sk:"Shape and angles",obj:"5Gg.04",f:function(){
  return mk(5,2,"Shape and angles","A cuboid is turned on its side. What changes?","Only how it looks, not its properties",
- [["It becomes a different shape","Turning does not change what a shape is."],["It gains extra faces","The number of faces stays the same."],["Its volume changes","Volume is unaffected by turning."]]);}},
+ [["Both how it looks and what it is","Turning does not change what a shape is."],["Only its properties, not how it looks","The number of faces stays the same."],["Its volume, but not its faces","Volume is unaffected by turning."]]);}},
 {st:5,d:2,sk:"Shape and angles",obj:"5Gg.05",f:function(){
  return mk(5,2,"Shape and angles","How many squares are in a net for a cube?",6,
  [[4,"A cube has six faces, including top and bottom."],[8,"Eight is the number of vertices."],[12,"Twelve is the number of edges."]]);}},
 {st:5,d:2,sk:"Position and transformation",obj:"5Gg.06",f:function(){
  return mk(5,2,"Position and transformation","Half a symmetrical pattern is drawn. How do you complete it?","Reflect every point across the mirror line",
- [["Copy it exactly beside itself","That slides it rather than reflecting it."],["Turn it upside down","That is a rotation."],["Draw anything that fits","Symmetry requires an exact mirror."]]);}},
+ [["Copy every point directly beside itself","That slides it rather than reflecting it."],["Turn every point upside down on the line","That is a rotation."],["Draw any points that fit the space","Symmetry requires an exact mirror."]]);}},
 {st:5,d:2,sk:"Position and transformation",obj:"5Gp.02",f:function(){var x=RN(1,6),y=RN(1,6);
  return mk(5,2,"Position and transformation","Points ("+x+", "+y+") and ("+(x+3)+", "+y+") are joined. What kind of line is it?","horizontal",
  [["vertical","A vertical line would keep the same first coordinate."],["diagonal","Both points have the same height."],["curved","Joining two points gives a straight line."]]);}},
@@ -4855,7 +4885,7 @@ var GEN = [
 {st:5,d:3,sk:"Text structure",f:function(){
   var q=PK([
    ["What is the job of a topic sentence?","To introduce the main idea of a paragraph",
-    ["To end the paragraph neatly","That's a concluding sentence, which comes last."],
+    ["To end the paragraph with a neat summary","That's a concluding sentence, which comes last."],
     ["To add an interesting fact","Supporting sentences do that, after the topic sentence."],
     ["To join two paragraphs","That's the job of a connective."]],
    ["When should a writer start a new paragraph?","When the topic, time or place changes",
@@ -4871,9 +4901,9 @@ var GEN = [
     ["To replace paragraphs","Subheadings label paragraphs rather than replacing them."],
     ["To end a section","A subheading opens a section."]],
    ["Where does a concluding sentence go?","At the end of a paragraph, summing up its point",
-    ["At the start of a paragraph","That's the topic sentence's place."],
-    ["In the middle","A conclusion needs the point made before it."],
-    ["Anywhere the writer likes","Its position is what makes it a conclusion."]],
+    ["At the start of a paragraph, opening its point","That's the topic sentence's place."],
+    ["In the middle of a paragraph, adding detail","A conclusion needs the point made before it."],
+    ["Anywhere the writer likes, with no set job","Its position is what makes it a conclusion."]],
    ["What does chronological order mean?","Events told in the order they happened",
     ["Events told in order of importance","That's a different way of organising a text."],
     ["Events told backwards","That would be reverse chronology."],
@@ -5016,7 +5046,7 @@ var GEN = [
 }},
 {st:6,d:3,sk:"Comprehension",f:function(){
   var sc=PK([["The room fell silent as she entered.","She had an impact on the people there","The room was empty","Nobody noticed her"],
-             ["He read the letter twice, then folded it very carefully.","The letter mattered to him","He couldn't read well","The letter was boring"],
+             ["He read the letter twice, then folded it very carefully.","The letter mattered to him","He couldn't read well","The letter was dull and quickly forgotten"],
              ["She laughed, but her eyes stayed still.","Her laughter wasn't genuine","She was very happy","She was tired"],
              ["The lights were on, though the shop sign said closed.","Someone was still inside","The shop had shut for good","It was daytime"],
              ["His suitcase was already by the door.","He was planning to leave","He had just arrived","He was unpacking"],
@@ -5139,25 +5169,25 @@ var GEN = [
 {st:7,d:3,sk:"Text structure",f:function(){
   var q=PK([
    ["What does a topic sentence followed by evidence and then explanation form?","A developed paragraph",
-    ["A conclusion","A conclusion sums up a whole text rather than building one point."],
-    ["An introduction","An introduction sets up the whole piece, not a single point."],
-    ["A quotation","A quotation is only the evidence part of that structure."]],
+    ["A concluding paragraph","A conclusion sums up a whole text rather than building one point."],
+    ["An introductory paragraph","An introduction sets up the whole piece, not a single point."],
+    ["A quoted paragraph","A quotation is only the evidence part of that structure."]],
    ["Why does a writer place the strongest argument last?","To leave the reader with the most convincing point",
     ["Because it is the longest","Length has nothing to do with placement."],
     ["To hide it from the reader","Final position gives prominence, not concealment."],
     ["Because the order is random","Argument order is a deliberate choice."]],
    ["What is the effect of opening a text in the middle of the action?","It grips the reader immediately",
     ["It confuses the reader on purpose","The aim is engagement, not confusion."],
-    ["It shortens the text","Structure and length are separate."],
+    ["Shortens the text overall","Structure and length are separate."],
     ["It signals a formal register","Register comes from word choice."]],
    ["What does a discourse marker such as 'in contrast' do?","Signals the relationship between two ideas",
     ["Adds a new topic","It links back rather than opening fresh ground."],
     ["Ends the paragraph","Markers usually open a sentence."],
     ["Provides evidence","Evidence is separate from the linking word."]],
    ["Why might a non-fiction writer use subheadings?","To let readers navigate to the part they need",
-    ["To increase the word count","Subheadings aid navigation."],
-    ["To replace the introduction","An introduction still does its own job."],
-    ["To make it harder to skim","They make skimming easier."]],
+    ["To increase the word count of the piece","Subheadings aid navigation."],
+    ["To replace the introduction and conclusion","An introduction still does its own job."],
+    ["To make the text harder for readers to skim","They make skimming easier."]],
    ["What is the function of a summary paragraph?","To draw the main threads together",
     ["To introduce new evidence","New evidence in a summary weakens it."],
     ["To pose a new question","That belongs earlier in the argument."],
@@ -5176,19 +5206,19 @@ var GEN = [
   var sc=PK([["The reviewer called the film 'ambitious'.","The reviewer is being cautiously positive without full praise","The reviewer loved it without reservation","The reviewer hated it"],
              ["Attendance was described as 'respectable'.","It was acceptable but not impressive","It broke all records","Nobody came"],
              ["The plan was labelled 'interesting' by the committee.","The committee had reservations they didn't state outright","The committee fully approved it","The committee rejected it outright"],
-             ["The meal was described as 'adequate'.","It met the minimum standard and no more","It was outstanding","It was inedible"],
+             ["The meal was described as 'adequate'.","It met the minimum standard and no more","It was outstanding and far beyond expectations","It was so poor as to be almost inedible"],
              ["His performance was called 'competent'.","It was skilled but unremarkable","It was thrilling","It was a failure"],
              ["The report noted the response was 'prompt enough'.","There is a hint of reservation about the speed","The response was praised warmly","The response never came"],
              ["The venue was described as 'compact'.","It was small, put positively","It was enormous","It was closed"],
              ["The proposal was called 'a starting point'.","More work is needed before it is acceptable","It is finished and approved","It has been abandoned"],
              ["Her answer was described as 'diplomatic'.","She avoided saying what she really thought","She was completely blunt","She said nothing"],
-             ["The results were called 'broadly in line with expectations'.","They were acceptable but not exciting","They far exceeded hopes","They were disastrous"],
+             ["The results were called 'broadly in line with expectations'.","They were acceptable but not exciting","They were better than anyone had hoped","They were worse than anyone had feared"],
              ["The film was said to 'have its moments'.","Only parts of it worked","All of it was excellent","None of it worked"],
              ["The service was described as 'not unhelpful'.","The writer is damning it with faint praise","The service was outstanding","The service was refused"]]);
   return mk(7,3,"Comprehension","'"+sc[0]+"'  What is implied?", sc[1],
    [[sc[2],"The word choice is more guarded than that."],
     [sc[3],"That overstates the negativity of the word used."],
-    ["Nothing is implied","Word choice carries implication even when nothing is stated."]]);
+    ["It was exactly as good as had been expected","Word choice carries implication even when nothing is stated."]]);
 }},
 {st:7,d:3,sk:"Grammar",f:function(){
   var s=PK([["Running down the street, the bag split open.","the bag appears to be running","Running down the street, she felt the bag split open."],
@@ -5202,9 +5232,9 @@ var GEN = [
             ["Torn and faded, he studied the old map.","he appears to be torn and faded","He studied the old map, which was torn and faded."],
             ["Having eaten quickly, the bus was still missed.","the bus appears to have eaten","Having eaten quickly, she still missed the bus."]]);
   return mk(7,3,"Grammar","What is wrong with:  '"+s[0]+"'", "The opening phrase attaches to the wrong subject",
-   [["Nothing is wrong","Read it literally — "+s[1]+"."],
-    ["It is missing a comma","The comma is there. The problem is what the phrase attaches to."],
-    ["It is in the passive voice","It isn't passive. The issue is a dangling modifier."]]);
+   [["Nothing is wrong with the sentence at all","Read it literally — "+s[1]+"."],
+    ["The comma is in the wrong place","The comma is there. The problem is what the phrase attaches to."],
+    ["The sentence is in the passive voice","It isn't passive. The issue is a dangling modifier."]]);
 }},
 
 /* ================= STAGE 8 · ages 12-13 ================= */
@@ -5330,9 +5360,9 @@ var GEN = [
                 "In a text using "+d[0]+" ("+d[1]+"), what does this achieve?",
                 "Why might a writer choose "+d[0]+", where "+d[1]+"?"]);
   return mk(8,3,"Text structure",stem8, CAP(d[2]),
-   [["It confuses the reader deliberately","Structural choices usually guide the reader rather than confuse them."],
+   [["Confuses the reader on purpose","Structural choices usually guide the reader rather than confuse them."],
     ["It shortens the text","Structure shapes meaning, not length."],
-    ["It has no effect on meaning","Structural choices always carry meaning."]]);
+    ["Changes nothing about the meaning","Structural choices always carry meaning."]]);
 }},
 {st:8,d:3,sk:"Comprehension",f:function(){
   var sc=PK([["Only three of the forty invited guests arrived.","The word 'only' signals the writer thinks this is a poor turnout","The writer thinks the turnout was excellent","The writer is stating a neutral fact"],
@@ -5346,11 +5376,11 @@ var GEN = [
              ["He conceded that mistakes had been made.","'Conceded' suggests he gave ground reluctantly","He volunteered it eagerly","He denied everything"],
              ["The report was described as 'so-called independent'.","The writer is casting doubt on its independence","The writer trusts the report fully","The writer has no opinion"],
              ["Profits allegedly rose last year.","'Allegedly' distances the writer from the claim","The writer confirms the rise","Profits definitely fell"],
-             ["She was permitted to speak for two minutes.","'Permitted' hints her voice was restricted","She spoke freely for as long as she wished","She refused to speak"]]);
+             ["She was permitted to speak for two minutes.","'Permitted' hints her voice was restricted","'Permitted' hints she spoke for as long as she liked","'Permitted' hints she chose not to speak"]]);
   return mk(8,3,"Comprehension","'"+sc[0]+"'  What does the writer's word choice reveal?", sc[1],
    [[sc[2],"The chosen word points in the other direction."],
     [sc[3],"The word choice is doing more work than that."],
-    ["Only the literal facts","Writers reveal attitude through the words they select."]]);
+    ["'Permitted' adds nothing beyond the facts","Writers reveal attitude through the words they select."]]);
 }},
 
 /* ================= STAGE 9 · ages 13-14 ================= */
@@ -5377,9 +5407,9 @@ var GEN = [
                 d[0]+".  Why might the writer have chosen it?",
                 "A writer selects "+d[0].charAt(0).toLowerCase()+d[0].slice(1)+".  What does this achieve?"]);
   return mk(9,1,"Language devices",stem9, CAP(d[1]),
-   [["It makes the sentence shorter","Word length isn't the point of the choice."],
-    ["It has a purely factual effect","Both options are factually similar; the difference is in connotation."],
-    ["It changes the tense","Both are the same tense. The difference is in meaning and feeling."]]);
+   [["Makes the sentence shorter","Word length isn't the point of the choice."],
+    ["Gives a purely factual account","Both options are factually similar; the difference is in connotation."],
+    ["Changes the tense of the verb","Both are the same tense. The difference is in meaning and feeling."]]);
 }},
 {st:9,d:1,sk:"Grammar",f:function(){
   var s=PK([["Had she known, she would have stayed.","conditional","describes a hypothetical past situation"],
@@ -5414,9 +5444,9 @@ var GEN = [
             ["A very long opening sentence","immerses the reader before any pause is offered"],
             ["Sentences of steadily decreasing length","tightens the pace towards a climax"]]);
   return mk(9,2,"Sentence building",s[0]+" typically does what?", CAP(s[1]),
-   [["Nothing — length is a matter of style only","Sentence length is one of a writer's main tools for controlling pace."],
-    ["It makes the writing less formal","Formality comes from word choice, not from sentence length alone."],
-    ["It signals a change of narrator","Sentence structure doesn't indicate who is speaking."]]);
+   [["Softens the tone and slows the pace","Sentence length is one of a writer's main tools for controlling pace."],
+    ["Makes the writing less formal","Formality comes from word choice, not from sentence length alone."],
+    ["Signals a change of narrator","Sentence structure doesn't indicate who is speaking."]]);
 }},
 {st:9,d:2,sk:"Comprehension",f:function(){
   var sc=PK([["A writer presents statistics from a study they funded themselves.","The evidence may be biased and should be treated with care","The evidence is automatically false","Funding has no bearing on reliability"],
@@ -5466,7 +5496,7 @@ var GEN = [
             ["a piece of travel writing","Sensory description that places the reader there","Statistical tables","Formal legal phrasing"],
             ["an academic essay","Cautious, evidenced claims","Sweeping personal opinion","Casual anecdotes"],
             ["a personal statement for a university application","Specific evidence of genuine interest","Generic enthusiasm","Complaints about school"],
-            ["a speech warning of a serious risk","Clear evidence paired with measured urgency","Panic and exaggeration","Dry statistics alone"],
+            ["a speech warning of a serious risk","Clear evidence paired with measured urgency","Alarm paired with deliberate exaggeration","Dry statistics with no sense of urgency"],
             ["a blog aimed at fellow hobbyists","Shared references and an informal register","Formal academic citation","Simplified basics"],
             ["a leaflet explaining a new law to the public","Plain language with concrete examples","Legal terminology throughout","Emotive campaigning"],
             ["a book review for a general readership","Judgement supported by brief examples","Plot summary only","Unexplained jargon"],
@@ -5476,7 +5506,7 @@ var GEN = [
   return mk(9,3,"Purpose and audience","Which choice best serves "+t[0]+"?", t[1],
    [[t[2],"That would work against the writer's purpose."],
     [t[3],"That's a mismatch for this audience."],
-    ["Whatever the writer prefers","Effective writing adapts to purpose and audience."]]);
+    ["Whatever tone the writer happens to prefer","Effective writing adapts to purpose and audience."]]);
 }},
 {st:9,d:3,sk:"Text structure",f:function(){
   var q=PK([
@@ -5509,9 +5539,9 @@ var GEN = [
     ["To make the text longer","It often makes it tighter."],
     ["Because memoirs must be non-linear","Many memoirs are strictly chronological."]],
    ["What is the function of a 'pivot' paragraph in an essay?","It marks the turn from one line of argument to another",
-    ["It summarises everything","That is a conclusion."],
-    ["It introduces the topic","That is the introduction."],
-    ["It provides the evidence","Evidence sits within body paragraphs."]]]);
+    ["It summarises every point made so far","That is a conclusion."],
+    ["It introduces the topic for the first time","That is the introduction."],
+    ["It provides the evidence for a claim","Evidence sits within body paragraphs."]]]);
   return mk(9,3,"Text structure",q[0],q[1],[q[2],q[3],q[4]]);
 }},
 {st:9,d:3,sk:"Punctuation",f:function(){
@@ -5527,12 +5557,12 @@ var GEN = [
             ["Their message was simple: enough.","colon","introduces the point being announced"],
             ["It worked — for a while.","dash","undercuts the statement with an afterthought"],
             ["She spoke first; he never replied.","semicolon","joins two closely related clauses"]]);
-  var others=[["colon","introducing an explanation"],["dash","adding an emphatic aside"],["semicolon","balancing linked clauses"]]
+  var others=[["colon","introduces an explanation of what came before"],["dash","adds an emphatic aside to the statement"],["semicolon","balances two closely linked clauses"]]
     .filter(function(x){ return x[0]!==s[1]; });
   return mk(9,3,"Punctuation","'"+s[0]+"'  Why has the writer chosen this mark?", CAP(s[2]),
    [[CAP(others[0][1]),"That describes "+others[0][0]+" use, which isn't quite what's happening here."],
     [CAP(others[1][1]),"That describes "+others[1][0]+" use."],
-    ["Ending the sentence early","The mark sits inside the sentence and shapes how it reads."]]);
+    ["Ends the sentence before it is complete","The mark sits inside the sentence and shapes how it reads."]]);
 }}
 ];
 
@@ -5807,9 +5837,9 @@ GEN = GEN.concat([
             ["Flying planes can be dangerous.","It is unclear whether the planes or the flying is dangerous"],
             ["The chicken is ready to eat.","It is unclear whether the chicken eats or is eaten"]]);
   return mk(8,3,"Grammar","Why is this sentence ambiguous?  '"+s[0]+"'", s[1],
-   [["It contains a spelling error","The spelling is correct; the problem is the structure."],
+   [["It contains a spelling error in the first word","The spelling is correct; the problem is the structure."],
     ["It is in the passive voice","Voice isn't the source of the ambiguity here."],
-    ["It is too short","Length isn't the issue — the structure allows two readings."]]);
+    ["It is too short to make its meaning clear","Length isn't the issue — the structure allows two readings."]]);
 }},
 
 /* ---------------- STAGE 9 ---------------- */
@@ -5838,9 +5868,9 @@ GEN = GEN.concat([
             ["a deliberate understatement","The collapse was, at best, unhelpful.","creates irony by playing down something serious"],
             ["a sudden colloquialism in formal prose","The strategy was, frankly, a mess.","jolts the reader and signals the writer's real view"]]);
   return mk(9,3,"Language devices","'"+d[1]+"'  The writer uses "+d[0]+". What is the effect?", CAP(d[2]),
-   [["It makes the writing more factual","Technique shapes how a claim lands, not whether it is factual."],
-    ["It has no effect beyond style","Stylistic choices carry meaning and effect."],
-    ["It signals the end of the text","This device can appear anywhere in a piece."]]);
+   [["Makes the writing more factual and precise","Technique shapes how a claim lands, not whether it is factual."],
+    ["Adds nothing beyond a change of style","Stylistic choices carry meaning and effect."],
+    ["Signals that the text is about to end","This device can appear anywhere in a piece."]]);
 }}
 ]);
 
@@ -5931,13 +5961,13 @@ GEN = GEN.concat([
 {st:9,d:3,sk:"Comprehension",f:function(){
   var s2=PK([["a first-person narrator who admits to forgetting details","The account may be unreliable and invites doubt","The account is fully trustworthy","The narrator is lying deliberately"],
              ["a narrator who describes only what one character sees","The reader's knowledge is deliberately limited","The reader knows everything","The narrator is absent"],
-             ["an omniscient narrator who reveals every character's thoughts","The reader is given more knowledge than any character","The reader is kept in the dark","There is no narrator"],
+             ["an omniscient narrator who reveals every character's thoughts","The reader is given more knowledge than any character","The reader is kept in the dark about events","There is no narrator telling the story"],
              ["a narrator who repeatedly insists they are telling the truth","The insistence itself raises suspicion","The narrator is definitely honest","The narrator is a minor character"],
              ["a second-person narrator addressing 'you'","The reader is placed inside the events","The reader is kept at a distance","The narrator is unnamed"]]);
   return mk(9,3,"Comprehension","A text uses "+s2[0]+".  What is the effect?", s2[1],
    [[s2[2],"That is the opposite of what this choice achieves."],
     [s2[3],"The narrative choice does not support that reading."],
-    ["No effect on the reader","Narrative perspective always shapes what the reader knows."]]);
+    ["The reader is affected in no particular way","Narrative perspective always shapes what the reader knows."]]);
 }}
 ]);
 
@@ -6240,9 +6270,9 @@ GEN = GEN.concat([
 {st:1,d:2,sk:"Sentence building",f:function(){
   var n=PK(W.actors), v=PK(W.actions);
   return mk(1,2,"Sentence building","Which one is a whole sentence?", "The "+n+" can "+v+".",
-   [["The "+n+".","That names something but does not say what it does."],
-    ["can "+v,"That is missing who or what is doing it."],
-    ["the "+n+" "+v,"A sentence needs a capital letter at the start and a full stop at the end."]]);
+   [["The "+n+" and the "+v+".","That names things but has no action."],
+    ["Can "+v+" the "+n+" now.","The words are jumbled and it is missing a doer."],
+    ["the "+n+" can "+v,"A sentence needs a capital letter at the start and a full stop at the end."]]);
 }},
 {st:1,d:3,sk:"Text structure",f:function(){
   var t=PK([["a story","Once upon a time"],["a letter","Dear Grandma"],["a recipe","First, get a bowl"]]);
@@ -6274,8 +6304,8 @@ GEN = GEN.concat([
   var w=PK([["First","the beginning"],["Next","the middle"],["Finally","the end"],["Meanwhile","something happening at the same time"]]);
   return mk(3,3,"Text structure","In a piece of writing, the word '"+w[0]+"' signals what?", w[1],
    [[w[1]==="the end"?"the beginning":"the end","That word points to a different part of the sequence."],
-    ["that the writer disagrees","This word orders events, it does not argue."],
-    ["a question is coming","This word does not introduce a question."]]);
+    ["a contrast","This word orders events, it does not argue."],
+    ["a question","This word does not introduce a question."]]);
 }},
 {st:3,d:3,sk:"Language devices",f:function(){
   var a=PK([["as quiet as a mouse","simile"],["the sun smiled down","personification"],
@@ -6330,8 +6360,8 @@ GEN = GEN.concat([
   return mk(5,3,"Comprehension","Read this:  "+sent+"  What does it suggest about "+n+"?",
     "The letter mattered and was hard to react to",
    [["The letter was boring","Reading it twice suggests the opposite."],
-    [n+" could not read","Reading it twice shows they could."],
-    ["Nothing can be worked out","Reading twice and staying silent are both clues."]]);
+    [n+" could not read the letter at all","Reading it twice shows they could."],
+    ["Nothing at all can be worked out from this","Reading twice and staying silent are both clues."]]);
 }},
 
 /* ---- Stage 6 ---- */
@@ -6478,9 +6508,9 @@ GEN = GEN.concat([
   var n=PK(W.names);
   return mk(4,2,"Comprehension","Read this:  The lights were off and the curtains drawn, though it was only four o'clock.  What does 'though' suggest?",
     "Something is unusual about it",
-   [["It was night time","Four o'clock is stated, which is the point of the surprise."],
-    ["The house was new","Nothing suggests that."],
-    ["It was a sunny day","'Though' signals something unexpected, not the weather."]]);
+   [["Something is normal about it","Four o'clock is stated, which is the point of the surprise."],
+    ["Something is broken in it","Nothing suggests that."],
+    ["Something is missing from it","'Though' signals something unexpected, not the weather."]]);
 }},
 {st:4,d:2,sk:"Vocabulary",f:function(){
   var w=PK([["un","not"],["re","again"],["pre","before"],["dis","opposite of"],["mis","wrongly"]]);
@@ -6547,16 +6577,16 @@ GEN = GEN.concat([
 {st:7,d:2,sk:"Sentence building",f:function(){
   return mk(7,2,"Sentence building","Which sentence contains a relative clause?",
     "The book, which had a torn cover, was still readable.",
-   [["The book was torn and readable.","Two ideas joined by 'and' is not a relative clause."],
-    ["Reading the book, she smiled.","That opens with a participle, not a relative clause."],
-    ["She read the book quickly.","There is only one clause here."]]);
+   [["The book had a torn cover and was still readable.","Two ideas joined by 'and' is not a relative clause."],
+    ["Reading the book with its torn cover, she smiled.","That opens with a participle, not a relative clause."],
+    ["She read the book with the torn cover quickly.","There is only one clause here."]]);
 }},
 {st:7,d:2,sk:"Text structure",f:function(){
   return mk(7,2,"Text structure","What is the job of a topic sentence?",
     "To tell the reader what the paragraph is about",
    [["To end the paragraph neatly","That is a concluding sentence."],
-    ["To give an example","Examples support the topic sentence."],
-    ["To introduce the whole piece","That is the job of the introduction."]]);
+    ["To give an example that supports a point","Examples support the topic sentence."],
+    ["To introduce the whole piece of writing","That is the job of the introduction."]]);
 }},
 
 /* ---------- Stage 8 ---------- */
@@ -6655,10 +6685,12 @@ GEN = GEN.concat([
  [[r[0],"That is the same word."],["dog","That does not rhyme."],["book","That does not rhyme."]]);}},
 {st:1,d:1,sk:"Punctuation",obj:"1Rg.02",f:function(){
  return mk(1,1,"Punctuation","What goes at the end of a sentence that tells you something?","a full stop",
- [["a question mark","That ends a question."],["a capital letter","That starts a sentence."],["nothing","Every sentence needs an ending mark."]]);}},
+ [["a question mark","That ends a question."],["a capital letter at the start","That starts a sentence."],["nothing","Every sentence needs an ending mark."]]);}},
 {st:1,d:2,sk:"Sentence building",obj:"1Rg.03",f:function(){var n=PK(W.actors),v=PK(W.actions);
  return mk(1,2,"Sentence building","Which one is a sentence?","The "+n+" can "+v+".",
- [["the "+n,"That is missing a capital letter, an action and a full stop."],["can "+v+".","That does not say who."],["The "+n,"That does not say what happens."]]);}},
+ [["the "+n+" can "+v,"A sentence needs a capital letter and a full stop."],
+    ["Can "+v+" the "+n+".","The words are in the wrong order."],
+    ["The "+n+" and the "+v+".","That names things but has no action."]]);}},
 {st:1,d:2,sk:"Sentence building",obj:"1Rg.04",f:function(){var a=PK(W.actors),b=PK(W.actors);
  if(a===b) return null;
  return mk(1,2,"Sentence building","Which word joins these two together:  the "+a+" __ the "+b+"?","and",
@@ -6706,12 +6738,12 @@ GEN = GEN.concat([
  [["excited","Yawning suggests the opposite."],["angry","Nothing points to anger."],["hungry","Yawning is about tiredness."]]);}},
 {st:1,d:2,sk:"Comprehension",obj:"1Ri.14",f:function(){
  return mk(1,2,"Comprehension","In a poem, what is it called when the same line comes back again?","repetition",
- [["rhyme","Rhyme is about words sounding the same at the end."],["rhythm","Rhythm is the beat."],["a title","A title names the poem."]]);}},
+ [["rhyme","Rhyme is about words sounding the same at the end."],["rhythm","Rhythm is the beat."],["alliteration","Alliteration repeats a starting sound."]]);}},
 
 /* ---------- STAGE 2 ---------- */
 {st:2,d:2,sk:"Phonics and word structure",obj:"2Rw.01",f:function(){var p=PK([["how","low"],["hot","cold"],["put","but"],["bread","bead"]]);
  return mk(2,2,"Phonics and word structure","Do '"+p[0]+"' and '"+p[1]+"' have the same vowel sound?","No, the letters sound different",
- [["Yes, they sound the same","Say them aloud: the vowel sounds differ."],["They rhyme exactly","They do not rhyme."],["It cannot be told","Saying them aloud settles it."]]);}},
+ [["Yes, they sound the same","Say them aloud: the vowel sounds differ."],["They rhyme exactly","They do not rhyme."],["No, but only in some accents","Saying them aloud settles it."]]);}},
 {st:2,d:2,sk:"Phonics and word structure",obj:"2Rw.02",f:function(){var w=PK([["made","a-e"],["like","i-e"],["hope","o-e"],["cube","u-e"]]);
  return mk(2,2,"Phonics and word structure","In '"+w[0]+"', which split digraph makes the long vowel sound?",w[1],
  [[w[1].split("-").reverse().join("-"),"The vowel comes first, then the e."],["ee","There is no 'ee' in this word."],["th","That is a consonant digraph."]]);}},
@@ -6750,10 +6782,10 @@ GEN = GEN.concat([
  [[n,"That names the thing."],["the","'The' is a determiner."],["and","There is no 'and' here."]]);}},
 {st:2,d:2,sk:"Sentence building",obj:"2Rv.05",f:function(){var o=PK(["Suddenly","Later","One morning","After lunch"]);
  return mk(2,2,"Sentence building","What does the opening word '"+o+"' tell the reader?","when something happened",
- [["who is speaking","It gives time, not a speaker."],["where it happened","It gives time, not place."],["nothing at all","Opening words guide the reader."]]);}},
+ [["who is speaking now","It gives time, not a speaker."],["where it all happened","It gives time, not place."],["how it was done","Opening words like this give time, not manner."]]);}},
 {st:2,d:2,sk:"Vocabulary",obj:"2Wv.02",f:function(){var n=PK(W.actors);
  return mk(2,2,"Vocabulary","Which sentence describes best?","The tiny, frightened "+n+" hid.",
- [["The "+n+" hid.","True, but it gives no description."],["It hid.","That does not even name what hid."],["The "+n+".","That is not a full sentence."]]);}},
+ [["The "+n+" hid behind the tree.","True, but it gives no description of the "+n+"."],["The "+n+" hid and then ran off.","That tells what happened, not what the "+n+" was like."],["The "+n+" hid for a long time.","That adds time, not description."]]);}},
 {st:2,d:2,sk:"Punctuation",obj:"2Rg.02",f:function(){var n=PK(W.names);
  return mk(2,2,"Punctuation","Which sentence needs a question mark?","Where is "+n,
  [[n+" is here","That is a statement."],["Stop now","That is a command."],[n+" ran fast","That is a statement."]]);}},
@@ -6768,7 +6800,7 @@ GEN = GEN.concat([
  [[q[1]==="every one of them"?"a few of them":"every one of them","That is what a different quantifier means."],["none of them","That would be 'no'."],["one of them","That would be 'one'."]]);}},
 {st:2,d:2,sk:"Grammar",obj:"2Rg.06",f:function(){var n=PK(W.names);
  return mk(2,2,"Grammar","Which word can replace '"+n+"' so it is not repeated?","she or he",
- [["they","'They' is for more than one person."],["it","'It' is for a thing, not a person."],["them","'Them' is used after a verb, not before."]]);}},
+ [["they or them","'They' is for more than one person."],["it or its","'It' is for a thing, not a person."],["him or them","'Him' and 'them' are used after a verb, not before."]]);}},
 {st:2,d:2,sk:"Punctuation",obj:"2Wg.02",f:function(){var items=PKn(W.actors,3);
  return mk(2,2,"Punctuation","Which list is punctuated correctly?","a "+items[0]+", a "+items[1]+" and a "+items[2],
  [["a "+items[0]+" a "+items[1]+" a "+items[2],"Commas are needed between the items."],["a "+items[0]+", a "+items[1]+", and a "+items[2],"No comma is needed before the final 'and' here."],["a "+items[0]+" and a "+items[1]+" and a "+items[2],"Commas replace all but the last 'and'."]]);}},
@@ -6806,7 +6838,7 @@ GEN = GEN.concat([
  [[a+1,"The text says "+a+"."],[a-1,"The text says "+a+"."],["we are not told","The number is given."]]);}},
 {st:2,d:2,sk:"Language devices",obj:"2Ri.16",f:function(){
  return mk(2,2,"Language devices","A poem repeats the same line at the end of every verse. What is that called?","repetition",
- [["rhyme","Rhyme is about matching end sounds."],["rhythm","Rhythm is the beat of the words."],["a title","A title names the poem."]]);}}
+ [["rhyme","Rhyme is about matching end sounds."],["rhythm","Rhythm is the beat of the words."],["alliteration","Alliteration repeats a starting sound."]]);}}
 ]);
 
 
@@ -6847,7 +6879,7 @@ GEN = GEN.concat([
  [[a<b?b:a,"When the first letters match, compare the second letters."],["they are the same","They are different words."],["it does not matter","Dictionaries use strict alphabetical order."]]);}},
 {st:3,d:2,sk:"Vocabulary",obj:"3Rv.04",f:function(){var n=PK(W.actors);
  return mk(3,2,"Vocabulary","Which is a noun phrase?","the enormous, hungry "+n,
- [["ran quickly","That describes an action."],["and then","That is a connective."],["was","That is a verb."]]);}},
+ [["ran very quickly away","That describes an action."],["and then, after that","Those are connectives."],["was, is and will be","Those are verbs."]]);}},
 {st:3,d:2,sk:"Vocabulary",obj:"3Rv.05",f:function(){var v=PK([["whispered","quietly"],["shouted","loudly"],["muttered","under their breath"]]);
  return mk(3,2,"Vocabulary","'\"Come here,\" she "+v[0]+".'  How was it said?",v[1],
  [[v[1]==="quietly"?"loudly":"quietly","That verb suggests the opposite."],["cheerfully","The verb does not suggest that."],["we cannot tell","The verb tells us."]]);}},
@@ -6865,10 +6897,10 @@ GEN = GEN.concat([
  [["announced","That suggests confidence."],["laughed","That suggests amusement."],["said","That is the word being replaced."]]);}},
 {st:3,d:2,sk:"Sentence building",obj:"3Wv.04",f:function(){
  return mk(3,2,"Sentence building","Which opening shows manner?","Slowly and carefully,",
- [["Later that day,","That shows time."],["In the garden,","That shows place."],["The dog","That is a subject, not an opening phrase."]]);}},
+ [["Later that same day,","That shows time."],["Out in the garden,","That shows place."],["The dog and the cat","That is a subject, not an opening phrase."]]);}},
 {st:3,d:2,sk:"Language devices",obj:"3Wv.06",f:function(){
  return mk(3,2,"Language devices","Which sentence uses a sound effect?","The gate creaked and clanged shut.",
- [["The gate was closed.","No sound words are used."],["The gate was blue.","That describes colour."],["He shut the gate.","No sound words are used."]]);}},
+ [["The gate was closed firmly shut.","No sound words are used."],["The gate was painted dark blue.","That describes colour."],["He shut the gate and walked on.","No sound words are used."]]);}},
 {st:3,d:2,sk:"Punctuation",obj:"3Rg.02",f:function(){
  return mk(3,2,"Punctuation","Which sentence needs an exclamation mark?","What a terrible noise",
  [["The noise was loud","That is a statement."],["Was it loud","That is a question."],["Turn it down","That is a command, usually with a full stop."]]);}},
@@ -6929,13 +6961,13 @@ GEN = GEN.concat([
  [[f[1].indexOf("group")>-1?"a large section of a book":"a group of sentences on one idea","That describes a different feature."],["the title of the book","That is the title."],["a picture caption","That is a caption."]]);}},
 {st:3,d:2,sk:"Text structure",obj:"3Rs.04",f:function(){
  return mk(3,2,"Text structure","What does an opening like 'Later that day' do between sentences?","Links this sentence to the one before",
- [["Ends the paragraph","It opens rather than ends."],["Introduces a new character","It signals time, not people."],["Nothing at all","Openings connect ideas."]]);}},
+ [["Ends the paragraph it belongs to","It opens rather than ends."],["Introduces a new character to us","It signals time, not people."],["Nothing beyond filling space","Openings connect ideas."]]);}},
 {st:3,d:2,sk:"Comprehension",obj:"3Ri.06",f:function(){var n=PK(W.names),d=PK(["Monday","Friday","Saturday"]);
  return mk(3,2,"Comprehension","Read this:  On "+d+", "+n+" travelled to the coast by train.  How did "+n+" travel?","by train",
  [["by car","The text says train."],["on foot","The text says train."],["we are not told","The text says it directly."]]);}},
 {st:3,d:3,sk:"Comprehension",obj:"3Ri.07",f:function(){
  return mk(3,3,"Comprehension","Read this:  Bees pollinate crops, which helps plants make fruit. Without them, harvests would fall.  What is the main point?","Bees are important for growing food",
- [["Bees can sting","The text does not mention stinging."],["Fruit is tasty","The text is about pollination."],["Harvests happen in autumn","The text does not say when."]]);}},
+ [["Bees are dangerous to people","The text does not mention stinging."],["Fruit is good for you to eat","The text is about pollination."],["Harvests happen every autumn","The text does not say when."]]);}},
 {st:3,d:3,sk:"Comprehension",obj:"3Ri.10",f:function(){var n=PK(W.names);
  return mk(3,3,"Comprehension","Read this:  "+n+" read the note twice, then folded it very small and pushed it deep into a pocket.  What is suggested?","The note was private or important",
  [[n+" did not understand it","Reading twice then hiding it suggests care, not confusion."],[n+" wanted to throw it away","It was kept, not discarded."],["Nothing is suggested","The actions are clues."]]);}},
@@ -6976,7 +7008,7 @@ GEN = GEN.concat([
  [[p[0]==="tough"?"through":"tough","The letters match but the sounds differ."],["though","That has a different vowel sound."],["thought","That has a different vowel sound."]]);}},
 {st:4,d:2,sk:"Vocabulary",obj:"4Rv.01",f:function(){
  return mk(4,2,"Vocabulary","Read this:  The room was immaculate, without a speck of dust anywhere.  What does 'immaculate' mean?","spotlessly clean",
- [["very messy","The clue says no dust anywhere."],["very large","Nothing suggests size."],["very old","Nothing suggests age."]]);}},
+ [["hopelessly messy","The clue says no dust anywhere."],["impressively large","Nothing suggests size."],["remarkably old","Nothing suggests age."]]);}},
 {st:4,d:2,sk:"Vocabulary",obj:"4Rv.02",f:function(){var r=PK([["telephone","telescope","far"],["autograph","automatic","self"],["submarine","subway","under"]]);
  return mk(4,2,"Vocabulary","'"+r[0]+"' and '"+r[1]+"' share a root. What does it mean?",r[2],
  [["fast","That is not what the shared part means."],["small","That is not what the shared part means."],["new","That is not what the shared part means."]]);}},
@@ -7001,7 +7033,7 @@ GEN = GEN.concat([
  [["annoyed","That is mild."],["irritated","That is mild."],["cross","That is moderate."]]);}},
 {st:4,d:2,sk:"Language devices",obj:"4Wv.05",f:function(){
  return mk(4,2,"Language devices","Which sentence uses a simile?","The lake was as still as glass.",
- [["The lake was still.","No comparison is made."],["The lake glittered.","That describes without comparing."],["The lake was a mirror.","That is a metaphor, with no 'like' or 'as'."]]);}},
+ [["The lake was still and calm.","No comparison is made."],["The lake glittered in the sun.","That describes without comparing."],["The lake was a silver mirror.","That is a metaphor, with no 'like' or 'as'."]]);}},
 {st:4,d:2,sk:"Punctuation",obj:"4Rg.02",f:function(){
  return mk(4,2,"Punctuation","What does the apostrophe show in 'the dog's bowl'?","the bowl belongs to the dog",
  [["there is more than one dog","Apostrophes do not make plurals."],["letters are missing","That is the other use of an apostrophe."],["it starts a sentence","Apostrophes do not do that."]]);}},
@@ -7061,7 +7093,7 @@ GEN = GEN.concat([
  [["after every sentence","Paragraphs group related sentences."],["only at the end","Paragraphs appear throughout."],["never in non-fiction","Non-fiction uses paragraphs too."]]);}},
 {st:4,d:2,sk:"Text structure",obj:"4Rs.04",f:function(){
  return mk(4,2,"Text structure","What links one paragraph to the next?","a connective such as 'However'",
- [["a full stop","That ends a sentence."],["a capital letter","That starts a sentence."],["nothing is needed","Links help the reader follow the argument."]]);}},
+ [["a full stop at the end","That ends a sentence."],["a capital letter","That starts a sentence."],["nothing, as links are unneeded","Links help the reader follow the argument."]]);}},
 {st:4,d:2,sk:"Text structure",obj:"4Ws.03",f:function(){
  return mk(4,2,"Text structure","Which word best opens a paragraph that disagrees with the one before?","However",
  [["Similarly","That signals agreement."],["Furthermore","That adds a similar point."],["Finally","That signals the end."]]);}},
@@ -7076,7 +7108,7 @@ GEN = GEN.concat([
  [[n+" was completely relaxed","Clenched hands suggest otherwise."],[n+" was angry with the photographer","Nothing points to anger at anyone."],["Nothing is suggested","The detail about the hands is a clue."]]);}},
 {st:4,d:3,sk:"Comprehension",obj:"4Ri.11",f:function(){
  return mk(4,3,"Comprehension","Read this:  Paint peeled from the shutters and weeds pushed through the steps.  What does this suggest about the house?","It had been neglected for a long time",
- [["It had just been built","New buildings do not have peeling paint."],["It was full of people","Nothing suggests occupants."],["It was expensive","Nothing suggests value."]]);}},
+ [["It had only just been finished","New buildings do not have peeling paint."],["It was full of noisy people","Nothing suggests occupants."],["It was expensive to buy","Nothing suggests value."]]);}},
 {st:4,d:2,sk:"Comprehension",obj:"4Ri.12",f:function(){
  return mk(4,2,"Comprehension","Which of these is a fact?","Water freezes at 0 degrees Celsius",
  [["Winter is the best season","That is a matter of opinion."],["Snow is prettier than rain","That is a matter of opinion."],["Everyone enjoys cold weather","That is an opinion, and not true of everyone."]]);}},
@@ -7128,13 +7160,13 @@ GEN = GEN.concat([
  [["homophones","Homophones sound alike but are spelt differently."],["synonyms","Synonyms mean the same thing."],["antonyms","Antonyms are opposites."]]);}},
 {st:5,d:3,sk:"Spelling",obj:"5Ww.07",f:function(){var p=PK([["pour","hour"],["piece","pie"]]);
  return mk(5,3,"Spelling","Do '"+p[0]+"' and '"+p[1]+"' share the same sound in the middle?","No, the letters are pronounced differently",
- [["Yes, they sound the same","Say them aloud: the sounds differ."],["They rhyme","They do not rhyme."],["It cannot be told","Saying them aloud settles it."]]);}},
+ [["Yes, the letters are pronounced the same","Say them aloud: the sounds differ."],["Yes, and the two words rhyme","They do not rhyme."],["It cannot be told","Saying them aloud settles it."]]);}},
 {st:5,d:3,sk:"Spelling",obj:"5Ww.08",f:function(){
  return mk(5,3,"Spelling","'i before e except after c' has exceptions. Which word breaks it?","weird",
  [["believe","That follows the rule."],["receive","That follows the 'after c' part."],["field","That follows the rule."]]);}},
 {st:5,d:3,sk:"Vocabulary",obj:"5Rv.01",f:function(){
  return mk(5,3,"Vocabulary","'Unbreakable' is built from parts. What does it mean?","not able to be broken",
- [["easily broken","The prefix 'un-' reverses the meaning."],["broken again","'Re-' would mean again."],["breaking now","The suffix '-able' means able to be."]]);}},
+ [["not able to be bent","The prefix 'un-' reverses the meaning of 'breakable', not 'bendable'."],["not broken yet","'Un-' says it cannot be broken, not that it has not been."],["not willing to break","The suffix '-able' means able to be."]]);}},
 {st:5,d:3,sk:"Vocabulary",obj:"5Rv.02",f:function(){var i=PK([["under the weather","feeling unwell"],["over the moon","delighted"],["a piece of cake","very easy"],["bite the bullet","face something difficult"]]);
  return mk(5,3,"Vocabulary","What does the phrase '"+i[0]+"' mean?",i[1],
  [[i[1]==="delighted"?"feeling unwell":"delighted","That is what a different idiom means."],["exactly what the words say","Idioms do not mean their literal words."],["nothing in particular","Idioms carry a settled meaning."]]);}},
@@ -7149,13 +7181,13 @@ GEN = GEN.concat([
  [[e[1]==="metaphor"?"personification":"metaphor","That describes a different device."],["a simile","A simile uses 'like' or 'as'."],["alliteration","Alliteration repeats opening sounds."]]);}},
 {st:5,d:3,sk:"Language devices",obj:"5Rv.07",f:function(){
  return mk(5,3,"Language devices","Why do writers use figurative language?","To create a picture beyond the literal words",
- [["To make writing longer","Length is not the purpose."],["To confuse the reader","It is meant to illuminate, not confuse."],["Because it is a rule","It is a choice, not a rule."]]);}},
+ [["To make a piece of writing much longer","Length is not the purpose."],["To confuse the reader with unusual words","It is meant to illuminate, not confuse."],["Because every good writer is told to","It is a choice, not a rule."]]);}},
 {st:5,d:2,sk:"Vocabulary",obj:"5Wv.02",f:function(){var s=PK([["walked","strolled","trudged"],["looked","glanced","stared"]]);
  return mk(5,2,"Vocabulary","Which word suggests tiredness:  "+s.slice(1).join(" or ")+"?",s[2]==="trudged"?"trudged":"stared",
  [[s[1],"That suggests something different."],[s[0],"That is the plain word."],["neither","One of them carries that sense."]]);}},
 {st:5,d:2,sk:"Vocabulary",obj:"5Wv.03",f:function(){
  return mk(5,2,"Vocabulary","Which phrase best conveys a tense mood?","the silence stretched thin",
- [["it was quiet","That is plain and neutral."],["nobody spoke","That states a fact without mood."],["the room was empty","That describes without tension."]]);}},
+ [["the room was very quiet","That is plain and neutral."],["nobody there said a word","That states a fact without mood."],["the whole room was empty","That describes without tension."]]);}},
 {st:5,d:3,sk:"Punctuation",obj:"5Rg.01",f:function(){var n=PK(W.names);
  return mk(5,3,"Punctuation","Which is reported speech?",n+" said that she was ready.",
  [["\u201CI am ready,\u201D said "+n+".","That is direct speech, with the exact words."],["\u201CI am ready.\u201D","That is direct speech."],["Ready?","That is a question, not reported speech."]]);}},
@@ -7191,7 +7223,7 @@ GEN = GEN.concat([
  [["might","That shows a small possibility."],["could","That shows an option."],["may","That shows permission or possibility."]]);}},
 {st:5,d:2,sk:"Grammar",obj:"5Wg.06",f:function(){
  return mk(5,2,"Grammar","Which sentence makes it clear who is meant?","Ana told Bea that Ana was leaving.",
- [["She told her that she was leaving.","It is unclear who 'she' refers to."],["They told them they were leaving.","It is unclear who is meant."],["She told her.","It is unclear and incomplete."]]);}},
+ [["Ana told her that she was leaving.","It is unclear who 'she' refers to."],["Ana told Bea that she was leaving.","It is unclear who 'she' refers to."],["She told Bea that Ana was leaving.","It is unclear who 'she' is."]]);}},
 {st:5,d:2,sk:"Grammar",obj:"5Wg.07",f:function(){var a=PK([["good","better","best"],["bad","worse","worst"],["quickly","more quickly","most quickly"]]);
  return mk(5,2,"Grammar","What is the superlative of '"+a[0]+"'?",a[2],
  [[a[1],"That compares two things."],[a[0],"That does not compare."],["most "+a[0],"This word has an irregular or set form."]]);}},
@@ -7209,13 +7241,13 @@ GEN = GEN.concat([
  [[a+1,"The text says "+a+"."],[a-1,"The text says "+a+"."],["it is not stated","The number is given."]]);}},
 {st:5,d:3,sk:"Comprehension",obj:"5Ri.07",f:function(){
  return mk(5,3,"Comprehension","Read this:  Cycling cuts pollution, saves money and keeps people fit. Many cities are building new lanes.  What links these points?","They are all reasons cycling is being encouraged",
- [["They are all about money","Only one point mentions cost."],["They are about city planning","That is a detail in the last sentence."],["They are unrelated","They build a single argument."]]);}},
+ [["They are all reasons cycling costs money","Only one point mentions cost."],["They are all reasons cities build lanes","That is a detail in the last sentence."],["They are all reasons cycling is dangerous","They build a single argument for it."]]);}},
 {st:5,d:3,sk:"Comprehension",obj:"5Ri.09",f:function(){var n=PK(W.names);
  return mk(5,3,"Comprehension","Read this:  "+n+" agreed to help, but did not look up from the book.  What is suggested?","The agreement was half-hearted",
- [[n+" was eager to help","Not looking up suggests otherwise."],[n+" refused","The text says they agreed."],["Nothing is suggested","The detail is a deliberate clue."]]);}},
+ [["The agreement was wholehearted","Not looking up suggests otherwise."],["The agreement was refused","The text says they agreed."],["The agreement was not mentioned","The text says they agreed."]]);}},
 {st:5,d:3,sk:"Comprehension",obj:"5Ri.11",f:function(){
  return mk(5,3,"Comprehension","Read this:  Whenever Sam spoke, Alex looked at the floor and said nothing.  What does this suggest about them?","There is tension between them",
- [["They are close friends","The behaviour suggests discomfort."],["They have never met","They are clearly in the same room repeatedly."],["Nothing can be inferred","The repeated behaviour is a clue."]]);}},
+ [["There is friendship between them","The behaviour suggests discomfort."],["There is no connection between them","They are clearly in the same room repeatedly."],["There is nothing to infer here","The repeated behaviour is a clue."]]);}},
 {st:5,d:2,sk:"Comprehension",obj:"5Ri.12",f:function(){
  return mk(5,2,"Comprehension","Which is an opinion?","This is the finest museum in the country",
  [["The museum opened in 1897","That can be checked."],["The museum has four floors","That can be checked."],["Entry costs nothing on Sundays","That can be checked."]]);}},
@@ -7250,7 +7282,7 @@ GEN = GEN.concat([
  [[w[1]==="Greek"?"Latin":"Greek","That is the origin of different words."],["Old Norse","That is not the origin here."],["Arabic","That is not the origin here."]]);}},
 {st:6,d:3,sk:"Language devices",obj:"6Rv.04",f:function(){
  return mk(6,3,"Language devices","A writer describes a crowd as 'a restless tide'. What is the effect?","It makes the crowd feel powerful and hard to control",
- [["It tells us the crowd was near the sea","It is a comparison, not a location."],["It shows the crowd was small","A tide suggests scale."],["It has no effect","The image is chosen deliberately."]]);}},
+ [["It tells us the crowd was near the sea","It is a comparison, not a location."],["It makes the crowd feel small and easy to manage","A tide suggests scale."],["It has no effect on how we see the crowd","The image is chosen deliberately."]]);}},
 {st:6,d:3,sk:"Language devices",obj:"6Rv.05",f:function(){var e=PK([["as cool as a cucumber","very calm"],["crying crocodile tears","pretending to be sad"],["once in a blue moon","very rarely"]]);
  return mk(6,3,"Language devices","What does '"+e[0]+"' mean?",e[1],
  [[e[1]==="very calm"?"pretending to be sad":"very calm","That is a different expression's meaning."],["exactly what it says","Figurative expressions are not literal."],["nothing settled","These expressions have agreed meanings."]]);}},
@@ -7284,7 +7316,7 @@ GEN = GEN.concat([
  [["The storm broke the window.","That is active."],["The storm was fierce.","That is a simple statement."],["Break the window.","That is a command."]]);}},
 {st:6,d:3,sk:"Grammar",obj:"6Rg.07",f:function(){
  return mk(6,3,"Grammar","How does dialogue usually differ from narration?","It is less formal and closer to speech",
- [["It is always longer","Dialogue is often shorter."],["It never uses punctuation","Dialogue is carefully punctuated."],["It cannot include questions","Dialogue often includes questions."]]);}},
+ [["It is always longer and more detailed","Dialogue is often shorter."],["It never uses any punctuation marks","Dialogue is carefully punctuated."],["It is more formal and further from speech","Dialogue is usually the opposite."]]);}},
 {st:6,d:3,sk:"Punctuation",obj:"6Wg.01",f:function(){
  return mk(6,3,"Punctuation","Which uses brackets correctly?","The result (announced yesterday) surprised everyone.",
  [["The result announced (yesterday surprised everyone).","The brackets enclose the wrong words."],["The result (announced yesterday surprised everyone.","A closing bracket is missing."],["The result) announced yesterday (surprised everyone.","The brackets are reversed."]]);}},
@@ -7320,13 +7352,13 @@ GEN = GEN.concat([
  [[String(y+10),"The text says "+y+"."],[String(y-10),"The text says "+y+"."],["it is not stated","The year is given."]]);}},
 {st:6,d:3,sk:"Comprehension",obj:"6Ri.07",f:function(){
  return mk(6,3,"Comprehension","Read this:  The scheme cost more than planned. It ran two years late. Even so, usage has exceeded every forecast.  Summarise it.","It was troubled but has proved popular",
- [["It was a complete failure","Usage exceeded forecasts."],["It went entirely to plan","It was over budget and late."],["It has not opened yet","It is in use."]]);}},
+ [["It was troubled and has proved unpopular","Usage exceeded forecasts."],["It went to plan and has proved popular","It was over budget and late."],["It has not opened and cannot be judged","It is in use."]]);}},
 {st:6,d:3,sk:"Comprehension",obj:"6Ri.08",f:function(){
  return mk(6,3,"Comprehension","Read this:  He said he was fine, and turned the photograph face down.  What is implied?","He was not fine",
  [["He was tidying up","Turning it face down is deliberate avoidance."],["He had not seen the photograph","He handled it."],["Nothing is implied","The action contradicts the words."]]);}},
 {st:6,d:3,sk:"Comprehension",obj:"6Ri.10",f:function(){
  return mk(6,3,"Comprehension","Read this:  The keys were gone from the hook, and the front door stood open.  What is the most plausible inference?","Someone has left in a hurry",
- [["The house has always been like this","The details suggest a recent change."],["The keys were never there","The text says they are gone from the hook."],["The door is broken","Nothing suggests damage."]]);}},
+ [["Someone has been living here for years","The details suggest a recent change."],["Someone has hidden the keys away","The text says they are gone from the hook."],["Someone has broken the door","Nothing suggests damage."]]);}},
 {st:6,d:3,sk:"Language devices",obj:"6Ri.11",f:function(){
  return mk(6,3,"Language devices","A writer uses short sentences, sudden noises and a darkening sky. What mood is built?","suspense",
  [["comfort","These choices do the opposite."],["humour","Nothing is played for laughs."],["boredom","These are attention-holding devices."]]);}},
@@ -7689,6 +7721,7 @@ function show(n){
   if(nav) nav.classList.toggle("locked", n === "start" || n === "consent");
   var bar = $("topBar");
   if(bar) bar.style.visibility = (n === "start" || n === "consent") ? "hidden" : "visible";
+  if(typeof closePreview === "function" && n !== "shop") closePreview();
   if(n==="home") renderHome();
   if(n==="extra") renderSubjectSwitch();
   if(n==="report" || n==="tests" || n==="ask" || n==="badges") renderSubjectSwitch();
@@ -7912,6 +7945,11 @@ $("editDelete").addEventListener("click", function(){
   toast(gone + " removed");
 });
 
+$("previewGo").addEventListener("click", confirmPurchase);
+$("previewCancel").addEventListener("click", closePreview);
+$("previewWrap").addEventListener("click", function(e){
+  if(e && e.target && e.target.id === "previewWrap") closePreview();   // tapping outside cancels
+});
 $("saveBtn").addEventListener("click", exportProgress);
 var wipeArmed = false;
 $("wipeBtn").addEventListener("click", function(){
@@ -8798,65 +8836,202 @@ document.querySelectorAll(".tab").forEach(function(t){
 });
 function sparkIcon(){ return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>'; }
 
-function renderShop(){
-  var p = P(), grid = $("shopGrid");
-  grid.innerHTML = "";
-  var items = [];
-  if(shopTab === "pets"){
+
+/* ============================================================
+   SHOP
+   Nothing is ever bought by a single tap. Tapping an item opens a
+   preview showing what it looks like, what it costs, what the child
+   has, and what they would have left. Sparks are only taken when
+   the child presses Buy on that preview.
+   ============================================================ */
+
+/* Locked items are shown in full colour, not greyed out: a child
+   cannot decide whether something is worth saving for if they
+   cannot see it. A padlock marks that it is not owned yet. */
+function sceneArt(k){
+  var sky = { meadow:"#BDEBFF", space:"#241553", ocean:"#8FE6F7", sunset:"#FFD3A8" }[k] || "#BDEBFF";
+  var ground = { meadow:"#5FD68B", space:"#3E2A86", ocean:"#1E7FD6", sunset:"#FF8FB0" }[k] || "#5FD68B";
+  var extra = "";
+  if(k === "meadow"){
+    extra = '<circle cx="70" cy="34" r="9" fill="#FFD84D" stroke="#1B1436" stroke-width="2.5"/>' +
+      '<circle cx="26" cy="36" r="7" fill="#fff" opacity=".9"/><circle cx="36" cy="36" r="9" fill="#fff" opacity=".9"/>' +
+      '<path d="M22 74q6-10 12 0M44 78q6-10 12 0M66 74q6-10 12 0" stroke="#2E8F4E" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  } else if(k === "space"){
+    extra = '<circle cx="70" cy="32" r="8" fill="#EDE4FF" stroke="#1B1436" stroke-width="2.5"/>' +
+      '<circle cx="26" cy="30" r="2" fill="#fff"/><circle cx="44" cy="24" r="1.6" fill="#fff"/>' +
+      '<circle cx="58" cy="42" r="1.8" fill="#fff"/><circle cx="34" cy="46" r="1.5" fill="#fff"/>' +
+      '<ellipse cx="40" cy="72" rx="20" ry="5" fill="#8A6BFF" opacity=".7"/>';
+  } else if(k === "ocean"){
+    extra = '<circle cx="70" cy="32" r="8" fill="#FFD84D" stroke="#1B1436" stroke-width="2.5"/>' +
+      '<path d="M14 62q10-7 20 0t20 0 20 0" stroke="#fff" stroke-width="3" fill="none" opacity=".8" stroke-linecap="round"/>' +
+      '<path d="M14 72q10-7 20 0t20 0 20 0" stroke="#fff" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>';
+  } else {
+    extra = '<circle cx="50" cy="46" r="12" fill="#FFB84D" stroke="#1B1436" stroke-width="2.5"/>' +
+      '<path d="M14 68h72" stroke="#fff" stroke-width="3" opacity=".6" stroke-linecap="round"/>' +
+      '<path d="M20 76h60" stroke="#fff" stroke-width="3" opacity=".4" stroke-linecap="round"/>';
+  }
+  return '<svg viewBox="0 0 100 104" aria-hidden="true">' +
+    '<rect x="8" y="16" width="84" height="72" rx="14" fill="' + sky + '" stroke="#1B1436" stroke-width="3.5"/>' +
+    '<path d="M8 60h84v14a14 14 0 0 1-14 14H22A14 14 0 0 1 8 74z" fill="' + ground + '"/>' + extra +
+    '<rect x="8" y="16" width="84" height="72" rx="14" fill="none" stroke="#1B1436" stroke-width="3.5"/></svg>';
+}
+
+function itemsFor(tab){
+  var p = P(), items = [];
+  if(tab === "pets"){
     Object.keys(CREATURES).forEach(function(k){
       var c = CREATURES[k];
-      items.push({k:k, n:c.n, t:c.t, p:c.p, own:p.owned.indexOf(k)!==-1, act:p.buddy===k, art:draw(k,"none")});
+      items.push({ k:k, n:c.n, t:c.t, p:c.p, own:p.owned.indexOf(k) !== -1,
+                   act:p.buddy === k, art:draw(k, "none"), kind:"Character" });
     });
-  } else if(shopTab === "hats"){
+  } else if(tab === "hats"){
     Object.keys(HATS).forEach(function(k){
-      var h = HATS[k];
-      var art = k==="none"
-        ? '<svg viewBox="0 0 100 104"><circle cx="50" cy="52" r="30" fill="#EDF3FB"/><path d="M36 52h28" stroke="#A9BDD6" stroke-width="6" stroke-linecap="round"/></svg>'
-        : '<svg viewBox="0 0 100 104">'+hatSVG(k)+'</svg>';
-      items.push({k:k, n:h.n, t:k==="none"?"Bare-headed and proud":"Fits any Brainling", p:h.p, own:p.hats.indexOf(k)!==-1, act:p.hat===k, art:art});
+      var hh = HATS[k];
+      var art = (k === "none")
+        ? '<svg viewBox="0 0 100 104" aria-hidden="true"><circle cx="50" cy="52" r="30" fill="#EDF3FB" stroke="#1B1436" stroke-width="3.5"/><path d="M36 52h28" stroke="#7F94AD" stroke-width="6" stroke-linecap="round"/></svg>'
+        : '<svg viewBox="0 0 100 104" aria-hidden="true"><g transform="translate(0,26)">' + hatSVG(k) + '</g></svg>';
+      items.push({ k:k, n:hh.n, t:(k === "none" ? "No hat at all" : "Fits any Brainling"),
+                   p:hh.p, own:p.hats.indexOf(k) !== -1, act:p.hat === k, art:art, kind:"Hat" });
     });
   } else {
     Object.keys(SCENES).forEach(function(k){
       var s = SCENES[k];
-      items.push({k:k, n:s.n, t:"Backdrop for your Brainling", p:s.p, own:p.scenes.indexOf(k)!==-1, act:p.scene===k,
-        art:'<svg viewBox="0 0 100 104"><rect x="8" y="18" width="84" height="68" rx="12" fill="'+
-          (k==="meadow"?"#7CE0A0":k==="space"?"#4B2A9E":k==="ocean"?"#2E9BFF":"#FF6FB5")+'"/>'+
-          '<rect x="8" y="18" width="84" height="30" rx="12" fill="'+
-          (k==="meadow"?"#C7ECFF":k==="space"?"#231548":k==="ocean"?"#9EEBFB":"#FFDDEF")+'"/>'+
-          '<circle cx="72" cy="34" r="8" fill="#FFC72C"/></svg>'});
+      items.push({ k:k, n:s.n, t:"A backdrop for your Brainling", p:s.p,
+                   own:p.scenes.indexOf(k) !== -1, act:p.scene === k, art:sceneArt(k), kind:"Scene" });
     });
   }
-  items.forEach(function(it){
-    var card = document.createElement("div");
-    card.className = "sc" + (it.own?" own":"") + (it.act?" act":"");
-    card.innerHTML = '<div class="th'+(it.own?"":" lock")+'">'+it.art+'</div><h3 class="d">'+it.n+'</h3><p>'+it.t+'</p>'+
-      (it.own?'':'<div class="price">'+sparkIcon()+it.p.toLocaleString()+'</div>');
-    var b = document.createElement("button");
-    b.className = "btn sm" + (it.own ? " mint" : " grape");
-    b.textContent = it.act ? "Equipped" : (it.own ? "Use" : "Buy");
-    b.disabled = it.act;
-    b.addEventListener("click", function(){ buy(shopTab, it.k, it.p); });
-    card.appendChild(b);
+  return items;
+}
+
+function renderShop(){
+  var p = P(), grid = $("shopGrid");
+  grid.innerHTML = "";
+
+  var bal = document.createElement("p");
+  bal.className = "shopbal";
+  bal.innerHTML = "You have " + sparkIcon() + "<b>" + p.sparks.toLocaleString() + "</b> sparks to spend";
+  grid.appendChild(bal);
+
+  itemsFor(shopTab).forEach(function(it){
+    var card = document.createElement("button");
+    card.className = "sc" + (it.own ? " own" : "") + (it.act ? " act" : "");
+    card.setAttribute("aria-label",
+      it.n + ", " + (it.act ? "in use" : it.own ? "owned, tap to use" : "costs " + it.p + " sparks, tap to look"));
+    card.innerHTML =
+      '<div class="th">' + it.art + (it.own ? "" : '<span class="lockdot" aria-hidden="true">\u{1F512}</span>') + '</div>' +
+      '<h3 class="d">' + it.n + '</h3>' +
+      (it.act ? '<span class="scstate on">In use</span>'
+              : it.own ? '<span class="scstate owned">Owned</span>'
+                       : '<span class="price">' + sparkIcon() + it.p.toLocaleString() + '</span>');
+    card.addEventListener("click", function(){ openItem(shopTab, it.k); });
     grid.appendChild(card);
   });
 }
-function buy(kind, key, price){
-  var p = P();
-  var list = kind==="pets" ? p.owned : (kind==="hats" ? p.hats : p.scenes);
+
+/* ---- preview, then confirm ---- */
+var previewItem = null, buyBusy = false;
+
+function openItem(tab, key){
+  var all = itemsFor(tab), it = null;
+  all.forEach(function(x){ if(x.k === key) it = x; });
+  if(!it) return;
+  previewItem = { tab:tab, it:it };
+  buyBusy = false;
+
+  var p = P(), have = p.sparks, short = Math.max(0, it.p - have);
+  var box = $("previewBody");
+  box.innerHTML = "";
+
+  var art = document.createElement("div");
+  art.className = "pvart";
+  art.innerHTML = it.art;
+  box.appendChild(art);
+
+  var name = document.createElement("h3");
+  name.className = "d pvname";
+  name.textContent = it.n;
+  box.appendChild(name);
+
+  var kind = document.createElement("p");
+  kind.className = "pvkind";
+  kind.textContent = it.kind + " \u00B7 " + it.t;
+  box.appendChild(kind);
+
+  if(it.act){
+    var used = document.createElement("p");
+    used.className = "pvnote ok";
+    used.textContent = "You are using this one now.";
+    box.appendChild(used);
+  } else if(it.own){
+    var owned = document.createElement("p");
+    owned.className = "pvnote ok";
+    owned.textContent = "You already own this. Nothing to pay.";
+    box.appendChild(owned);
+  } else {
+    var rows = document.createElement("div");
+    rows.className = "pvsum";
+    rows.innerHTML =
+      '<div class="pvrow"><span>It costs</span><b>' + sparkIcon() + it.p.toLocaleString() + '</b></div>' +
+      '<div class="pvrow"><span>You have</span><b>' + sparkIcon() + have.toLocaleString() + '</b></div>' +
+      (short
+        ? '<div class="pvrow short"><span>You still need</span><b>' + sparkIcon() + short.toLocaleString() + '</b></div>'
+        : '<div class="pvrow left"><span>You would have left</span><b>' + sparkIcon() + (have - it.p).toLocaleString() + '</b></div>');
+    box.appendChild(rows);
+    if(short){
+      var note = document.createElement("p");
+      note.className = "pvnote warn";
+      note.textContent = "Not enough sparks yet. Answer more questions and come back.";
+      box.appendChild(note);
+    }
+  }
+
+  // the action button says exactly what it will do
+  var go = $("previewGo");
+  go.className = "btn " + (it.act ? "ghost" : (it.own ? "mint" : (short ? "ghost" : "grape")));
+  go.textContent = it.act ? "Already in use" : (it.own ? "Use this one" : (short ? "Not enough sparks" : "Buy for " + it.p.toLocaleString()));
+  go.disabled = !!(it.act || short);
+  $("previewCancel").textContent = it.own ? "Close" : "No thanks";
+  $("previewWrap").style.display = "flex";
+}
+
+function closePreview(){
+  previewItem = null;
+  buyBusy = false;
+  $("previewWrap").style.display = "none";
+}
+
+/* The only place sparks are ever taken. */
+function confirmPurchase(){
+  if(!previewItem || buyBusy) return;          // guards a double tap
+  buyBusy = true;
+  var p = P(), tab = previewItem.tab, key = previewItem.it.k, price = previewItem.it.p;
+  var list = tab === "pets" ? p.owned : (tab === "hats" ? p.hats : p.scenes);
+
   if(list.indexOf(key) === -1){
-    if(p.sparks < price){ toast("You need " + (price - p.sparks).toLocaleString() + " more sparks"); return; }
+    if(p.sparks < price){                       // re-checked at the moment of paying
+      buyBusy = false;
+      toast("Not enough sparks");
+      return;
+    }
     p.sparks -= price;
     list.push(key);
     confetti(16);
     SFX.buy();
-    queueSave();
-    toast("Unlocked");
+    toast(previewItem.it.n + " unlocked");
+  } else {
+    SFX.tick();
+    toast(previewItem.it.n + " ready");
   }
-  if(kind==="pets") p.buddy = key;
-  else if(kind==="hats") p.hat = key;
+
+  if(tab === "pets") p.buddy = key;
+  else if(tab === "hats") p.hat = key;
   else p.scene = key;
+
   checkBadges();
-  syncBar(); renderShop();
+  queueSave();
+  closePreview();
+  syncBar();
+  renderShop();
 }
 
 /* ============================================================
@@ -9048,7 +9223,6 @@ function submitTyped(){
 var SRS_DAYS = [1, 3, 10, 30, 90];
 var SRS_SOON = 8;            // questions until it comes back in this session
 
-function genKey(g){ return g.key; }
 function nowMs(){ return Date.now(); }
 
 function schedMiss(p, g){
@@ -9243,10 +9417,6 @@ function sayWord(text, done){
    ============================================================ */
 var FIT_BASE = { q:34, stem:15, opt:24, key:24, disp:34 };
 
-function pxOf(el, prop){
-  var v = parseFloat(el.style[prop] || "");
-  return isNaN(v) ? null : v;
-}
 function overflowing(el){
   if(!el) return false;
   var sh = el.scrollHeight || 0, ch = el.clientHeight || 0;
